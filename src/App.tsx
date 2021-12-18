@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Grid } from "@chakra-ui/react"
+import React from "react"
+import "./App.css"
+import { Header } from "./components/header/Header"
+import { Layout } from "./components/Layout"
+import { Navigator } from "./components/navigator/Navigator"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { IndexView } from "./components/views/Index"
+import customTheme from "./assets/theme"
+import { createStore, applyMiddleware, Store } from "redux"
+import { Provider } from "react-redux"
+import thunk from "redux-thunk"
+import reducer from "./store/reducer"
+import { DispatchType, PhoneAction, PhoneState } from "./store/types"
+import { AddView } from "./components/views/Add"
+
+const store: Store<PhoneState, PhoneAction> & {
+  dispatch: DispatchType
+} = createStore(reducer, applyMiddleware(thunk))
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <BrowserRouter>
+      <Provider store={store}>
+        <Layout>
+          <Header />
+          <Grid
+            templateColumns="260px auto"
+            bg={customTheme.colors.medium}
+            borderBottomLeftRadius={20}
+            borderBottomRightRadius={20}
+          >
+            <Navigator />
+            <Routes>
+              <Route path="/" element={<IndexView />} />
+              <Route path="/add" element={<AddView />} />
+            </Routes>
+          </Grid>
+        </Layout>
+      </Provider>
+    </BrowserRouter>
+  )
 }
 
-export default App;
+export default App
